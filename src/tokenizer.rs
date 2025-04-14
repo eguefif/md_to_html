@@ -31,11 +31,13 @@ impl<'a> Tokenizer<'a> {
                 break;
             }
         }
-        match &raw_title[..3] {
-            "###" => Some(Token::Title3(raw_title[..3].to_string())),
-            "##" => Some(Token::Title2(raw_title[..3].to_string())),
-            "#" => Some(Token::Title1(raw_title[..3].to_string())),
-            _ => None,
+        println!("raw: {}", raw_title);
+        if &raw_title[..1] == "##" {
+            Some(Token::Title3(raw_title[2..].to_string()))
+        } else if &raw_title[..1] == "#" {
+            Some(Token::Title2(raw_title[1..].to_string()))
+        } else {
+            Some(Token::Title1(raw_title))
         }
     }
 
@@ -44,10 +46,10 @@ impl<'a> Tokenizer<'a> {
     }
 }
 
-impl<'_> Iterator for Tokenizer<'_> {
+impl<'a> Iterator for Tokenizer<'a> {
     type Item = Token;
-    pub fn next(&mut self) -> Option<Self::Item> {
-        if let Ok(next) = self.iter.next() {
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(next) = self.iter.next() {
             match next {
                 '#' => self.get_title_token(),
                 _ => self.get_text_token(),
