@@ -9,12 +9,18 @@ fn test_transform() {
 
 fn get_md_content() -> &'static str {
     return "\
-#test\
+#test
+##test hello world
+###test42
+####test42
     ";
 }
 
 fn get_html_content() -> &'static str {
     return "\
-<h1>test</h1>\
+<h1 class=\"md\">test</h1>\
+<h2 class=\"md\">test hello world</h2>\
+<h3 class=\"md\">test42</h3>\
+<h4 class=\"md\">test42</h4>\
     ";
 }

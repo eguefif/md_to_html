@@ -6,6 +6,7 @@ pub enum Token {
     Title1(String),
     Title2(String),
     Title3(String),
+    Title4(String),
 }
 
 pub struct Tokenizer<'a> {
@@ -31,10 +32,11 @@ impl<'a> Tokenizer<'a> {
                 break;
             }
         }
-        println!("raw: {}", raw_title);
-        if &raw_title[..1] == "##" {
+        if raw_title.starts_with("###") {
+            Some(Token::Title4(raw_title[3..].to_string()))
+        } else if raw_title.starts_with("##") {
             Some(Token::Title3(raw_title[2..].to_string()))
-        } else if &raw_title[..1] == "#" {
+        } else if raw_title.starts_with("#") {
             Some(Token::Title2(raw_title[1..].to_string()))
         } else {
             Some(Token::Title1(raw_title))
