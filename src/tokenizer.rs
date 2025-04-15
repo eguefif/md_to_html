@@ -12,6 +12,9 @@ pub enum Token {
     Title2(String),
     Title3(String),
     Title4(String),
+    Em(String),
+    Bold(String),
+    EmBold(String),
 }
 
 pub struct Tokenizer<'a> {
@@ -87,6 +90,36 @@ impl<'a> Tokenizer<'a> {
         }
         Some(Token::Paragraph(content))
     }
+
+    fn handle_emphasize(&mut self) -> Option<Token> {
+        let mut kind = 1;
+        let mut content = String::new();
+        while let Some(peek) = self.iter.peek() {
+            if ['*', '_'].contains(peek) && kind < 3 {
+                self.iter.next();
+                kind += 1;
+            } else {
+                break;
+            }
+        }
+        let mut counter = kind;
+        while let Some(next) = self.iter.next() {
+            if counter == 0 {
+                break;
+            }
+            if ['*', '_'].contains(&next) {
+                counter -= 1;
+            }
+            content.push(next);
+        }
+        let content = (&content[..content.len() - kind]).to_string();
+        match kind {
+            1 => Some(Token::Em(content)),
+            2 => Some(Token::Bold(content)),
+            3 => Some(Token::EmBold(content)),
+            _ => None,
+        }
+    }
 }
 
 impl<'a> Iterator for Tokenizer<'a> {
@@ -96,6 +129,7 @@ impl<'a> Iterator for Tokenizer<'a> {
             match next {
                 '#' => self.get_title_token(),
                 '\n' => self.handle_line_feed(),
+                '_' | '*' => self.handle_emphasize(),
                 _ => self.get_text_token(next),
             }
         } else {
