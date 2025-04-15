@@ -1,8 +1,13 @@
 use std::iter::{Iterator, Peekable};
 use std::str::Chars;
 
+const SPECIAL_CHAR: &[char] = &['\n', '_', '*', '#'];
+
+#[derive(Debug)]
 pub enum Token {
     Text(String),
+    Paragraph(String),
+    LineFeed,
     Title1(String),
     Title2(String),
     Title3(String),
@@ -43,8 +48,44 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    fn get_text_token(&mut self) -> Option<Token> {
-        None
+    fn get_text_token(&mut self, next: char) -> Option<Token> {
+        let mut text = String::new();
+        text.push(next);
+        while let Some(peek) = self.iter.peek() {
+            if SPECIAL_CHAR.contains(peek) {
+                break;
+            }
+            text.push(*peek);
+            self.iter.next();
+        }
+        Some(Token::Text(text))
+    }
+
+    fn handle_line_feed(&mut self) -> Option<Token> {
+        if let Some(peek) = self.iter.peek() {
+            if *peek == '\n' {
+                self.iter.next();
+                self.get_paragraph()
+            } else {
+                Some(Token::LineFeed)
+            }
+        } else {
+            Some(Token::LineFeed)
+        }
+    }
+
+    fn get_paragraph(&mut self) -> Option<Token> {
+        let mut content = String::new();
+        while let Some(next) = self.iter.next() {
+            if let Some(peek) = self.iter.peek() {
+                if next == '\n' && *peek == '\n' {
+                    self.iter.next();
+                    break;
+                }
+            }
+            content.push(next);
+        }
+        Some(Token::Paragraph(content))
     }
 }
 
@@ -54,7 +95,8 @@ impl<'a> Iterator for Tokenizer<'a> {
         if let Some(next) = self.iter.next() {
             match next {
                 '#' => self.get_title_token(),
-                _ => self.get_text_token(),
+                '\n' => self.handle_line_feed(),
+                _ => self.get_text_token(next),
             }
         } else {
             None
