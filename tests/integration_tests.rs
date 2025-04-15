@@ -22,7 +22,11 @@ Hello Paragraph 42
 hello
 ####test42
 _Yoooo de fou_
-__*Hello you ici bas__*"#;
+__*Hello you ici bas__*
+
+- Hello World
++ Hello 1
+* Hello 2"#;
 }
 
 fn get_html_content() -> &'static str {
@@ -35,5 +39,12 @@ fn get_html_content() -> &'static str {
 hello<br class=\"md\" />\
 <h4 class=\"md\">test42</h4>\
 <em>Yoooo de fou</em>\
-<em><strong>Hello you ici bas</strong></em>";
+<em><strong>Hello you ici bas</strong></em>\
+<p>\
+<ul>\
+<li>Hello World</li>\
+<li>Hello 1</li>\
+<li>Hello 2</li>\
+</ul>|
+";
 }
