@@ -27,6 +27,7 @@ Hello *__World__* in second paragraph
 1. Item2
 3. Item3
 5. Item4
+[Link to](http://www.fakewebsite.com)
 "#;
 }
 
@@ -54,5 +55,6 @@ Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragr
 <li class=\"md\">Item3</li>\
 <li class=\"md\">Item4</li>\
 </ol>\
+<p class=\"md\"><a href=\"http://www.fakewebsite.com\" class=\"md\">Link to</a></p>\
 ";
 }

@@ -65,6 +65,10 @@ fn transform_text(content: &str) -> String {
                 html.push_str(&value);
             }
             LineToken::LF => html.push_str("<br/>"),
+            LineToken::Url(value) => html.push_str(&format!(
+                "<a href=\"{}\" class=\"md\">{}</a>",
+                value.url, value.a
+            )),
         }
     }
     html

@@ -69,9 +69,11 @@ impl<'a> Tokenizer<'a> {
         if let Some(peek) = self.iter.peek() {
             if SPECIAL_LINE_CHAR.contains(peek) {
                 return true;
+            } else {
+                return false;
             }
         }
-        false
+        true
     }
 
     fn is_linefeed(&mut self) -> bool {
