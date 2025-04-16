@@ -11,6 +11,7 @@ pub enum Token {
     Title3(String),
     Title4(String),
     Unordered(Vec<String>),
+    Ordered(Vec<String>),
 }
 
 pub struct Tokenizer<'a> {
@@ -97,6 +98,7 @@ impl<'a> Tokenizer<'a> {
             match peek {
                 '#' => self.get_title_token(),
                 '-' | '*' | '+' => self.get_unordered_list(),
+                '1' => self.get_ordered_list(),
                 _ => None,
             }
         } else {
@@ -123,6 +125,41 @@ impl<'a> Tokenizer<'a> {
     fn is_unordered_list_end(&mut self) -> bool {
         if let Some(peek) = self.iter.peek() {
             if ['-', '*', '+'].contains(peek) {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn get_ordered_list(&mut self) -> Option<Token> {
+        let mut list = Vec::new();
+        loop {
+            let item = self.get_next_line();
+            if item.len() > 1 {
+                let mut item_iter = item.chars().peekable();
+                while let Some(peek) = item_iter.peek() {
+                    if !peek.is_digit(10) {
+                        break;
+                    }
+                    item_iter.next();
+                }
+
+                let item = item_iter.collect::<String>();
+                list.push(item[2..].to_string());
+            } else {
+                list.push(String::new())
+            }
+            if self.is_ordered_list_end() {
+                break;
+            }
+        }
+
+        Some(Token::Ordered(list))
+    }
+
+    fn is_ordered_list_end(&mut self) -> bool {
+        if let Some(peek) = self.iter.peek() {
+            if peek.is_digit(10) {
                 return false;
             }
         }

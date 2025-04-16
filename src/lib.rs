@@ -29,10 +29,19 @@ pub fn transform(content: &str) -> String {
                 }
                 html.push_str("</ul>");
             }
+            Token::Ordered(value) => {
+                html.push_str("<ol class=\"md\">");
+                for item in value {
+                    html.push_str(&format!("<li class=\"md\">{}</li>", item));
+                }
+                html.push_str("</ol>");
+            }
             Token::Paragraph(value) => {
-                html.push_str("<p class=\"md\">");
-                html.push_str(&transform_text(&value));
-                html.push_str("</p>");
+                if value.len() > 0 {
+                    html.push_str("<p class=\"md\">");
+                    html.push_str(&transform_text(&value));
+                    html.push_str("</p>");
+                }
             }
         }
     }
