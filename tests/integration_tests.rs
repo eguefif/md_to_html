@@ -14,6 +14,10 @@ Hello
 Hello World in second paragraph
 Hello World in second paragraph
 Hello World in second paragraph
+# Hello World
+## Hello World
+### Hello World
+#### Hello World
 "#;
 }
 
@@ -23,7 +27,11 @@ fn get_html_content() -> &'static str {
 <p class=\"md\">\
 Hello World in second paragraph<br/>\
 Hello World in second paragraph<br/>\
-Hello World in second paragraph<br/>\
+Hello World in second paragraph\
 </p>\
+<h1 class=\"md\">Hello World</h1>\
+<h2 class=\"md\">Hello World</h2>\
+<h3 class=\"md\">Hello World</h3>\
+<h4 class=\"md\">Hello World</h4>\
 ";
 }
