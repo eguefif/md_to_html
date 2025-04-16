@@ -27,6 +27,12 @@ Hello *__World__* in second paragraph
 1. Item2
 3. Item3
 5. Item4
+[Link to](http://www.fakewebsite.com)
+You can click on [Link to](http://www.fakewebsite.com)
+1. Link: [test](http://test.com)
+1. Link2: [test2](http://test2.com)
+>Hello, I'm a quote
+>That goes over two lines
 "#;
 }
 
@@ -54,5 +60,12 @@ Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragr
 <li class=\"md\">Item3</li>\
 <li class=\"md\">Item4</li>\
 </ol>\
+<p class=\"md\"><a href=\"http://www.fakewebsite.com\" class=\"md\">Link to</a><br/>\
+You can click on <a href=\"http://www.fakewebsite.com\" class=\"md\">Link to</a></p>\
+<ol class=\"md\">\
+<li class=\"md\">Link: <a href=\"http://test.com\" class=\"md\">test</a></li>\
+<li class=\"md\">Link2: <a href=\"http://test2.com\" class=\"md\">test2</a></li>\
+</ol>\
+<div class=\"md quote\">Hello, I'm a quote<br/>That goes over two lines</div>\
 ";
 }

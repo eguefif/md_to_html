@@ -1,7 +1,7 @@
 use std::iter::{Iterator, Peekable};
 use std::str::Chars;
 
-const SPECIAL_LINE_CHAR: &[char] = &['-', '*', '#', '+', '1'];
+const SPECIAL_LINE_CHAR: &[char] = &['-', '*', '#', '+', '1', '>'];
 
 #[derive(Debug)]
 pub enum Token {
@@ -12,6 +12,7 @@ pub enum Token {
     Title4(String),
     Unordered(Vec<String>),
     Ordered(Vec<String>),
+    Quote(String),
 }
 
 pub struct Tokenizer<'a> {
@@ -69,9 +70,11 @@ impl<'a> Tokenizer<'a> {
         if let Some(peek) = self.iter.peek() {
             if SPECIAL_LINE_CHAR.contains(peek) {
                 return true;
+            } else {
+                return false;
             }
         }
-        false
+        true
     }
 
     fn is_linefeed(&mut self) -> bool {
@@ -99,6 +102,7 @@ impl<'a> Tokenizer<'a> {
                 '#' => self.get_title_token(),
                 '-' | '*' | '+' => self.get_unordered_list(),
                 '1' => self.get_ordered_list(),
+                '>' => self.get_quote(),
                 _ => None,
             }
         } else {
@@ -169,6 +173,22 @@ impl<'a> Tokenizer<'a> {
         item_iter.next();
         item_iter.next();
         item_iter.collect::<String>()
+    }
+
+    fn get_quote(&mut self) -> Option<Token> {
+        let mut quote = String::new();
+        while let Some(line) = self.get_next_line().into() {
+            if line.is_empty() {
+                break;
+            }
+            quote.push_str(&line[1..]);
+            match self.iter.peek() {
+                Some('>') => quote.push('\n'),
+                _ => break,
+            }
+        }
+
+        Some(Token::Quote(quote))
     }
 }
 

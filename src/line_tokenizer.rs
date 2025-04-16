@@ -1,12 +1,18 @@
 use std::iter::{Iterator, Peekable};
 use std::str::Chars;
 
+pub struct Link {
+    pub url: String,
+    pub a: String,
+}
+
 pub enum LineToken {
     LF,
     Em(String),
     Bold(String),
     EmBold(String),
     Text(String),
+    Url(Link),
 }
 
 pub struct LineTokenizer<'a> {
@@ -55,7 +61,7 @@ impl<'a> LineTokenizer<'a> {
     fn get_text(&mut self) -> Option<LineToken> {
         let mut text = String::new();
         while let Some(peek) = self.iter.peek() {
-            if ['*', '_', '\n'].contains(peek) {
+            if ['[', '*', '_', '\n'].contains(peek) {
                 break;
             }
             text.push(*peek);
@@ -63,19 +69,37 @@ impl<'a> LineTokenizer<'a> {
         }
         Some(LineToken::Text(text))
     }
+
+    fn handle_link(&mut self) -> Option<LineToken> {
+        let mut url = String::new();
+        let mut a = String::new();
+        self.iter.next();
+        while let Some(next) = self.iter.next_if(|peek| *peek != ']') {
+            a.push(next);
+        }
+        self.iter.next();
+        self.iter.next();
+        while let Some(next) = self.iter.next_if(|peek| *peek != ')') {
+            url.push(next);
+        }
+        self.iter.next();
+
+        Some(LineToken::Url(Link { url, a }))
+    }
 }
 
 impl<'a> Iterator for LineTokenizer<'a> {
     type Item = LineToken;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(peek) = self.iter.peek() {
-            if ['*', '_'].contains(peek) {
-                self.handle_emphasize()
-            } else if *peek == '\n' {
-                self.iter.next();
-                return Some(LineToken::LF);
-            } else {
-                self.get_text()
+            match peek {
+                '*' | '_' => self.handle_emphasize(),
+                '\n' => {
+                    self.iter.next();
+                    return Some(LineToken::LF);
+                }
+                '[' => self.handle_link(),
+                _ => self.get_text(),
             }
         } else {
             None
