@@ -1,26 +1,61 @@
+use line_tokenizer::{LineToken, LineTokenizer};
 use tokenizer::{Token, Tokenizer};
 
+pub mod line_tokenizer;
 pub mod tokenizer;
+
 pub fn transform(content: &str) -> String {
     let mut html = String::new();
     let mut tokenizer = Tokenizer::new(content);
 
     while let Some(token) = tokenizer.next() {
         match token {
-            Token::Title1(value) => html.push_str(&format!("<h1 class=\"md\">{}</h1>", value)),
-            Token::Title2(value) => html.push_str(&format!("<h2 class=\"md\">{}</h2>", value)),
-            Token::Title3(value) => html.push_str(&format!("<h3 class=\"md\">{}</h3>", value)),
-            Token::Title4(value) => html.push_str(&format!("<h4 class=\"md\">{}</h4>", value)),
-            Token::Em(value) => html.push_str(&format!("<em>{}</em>", value)),
-            Token::Bold(value) => html.push_str(&format!("<strong>{}</strong>", value)),
-            Token::EmBold(value) => html.push_str(&format!("<em><strong>{}</strong></em>", value)),
-            Token::LineFeed => html.push_str(&format!("<br class=\"md\" />")),
-            Token::Text(value) => html.push_str(&value),
+            Token::Title1(value) => {
+                html.push_str(&format!("<h1 class=\"md\">{}</h1>", value.trim()))
+            }
+            Token::Title2(value) => {
+                html.push_str(&format!("<h2 class=\"md\">{}</h2>", value.trim()))
+            }
+            Token::Title3(value) => {
+                html.push_str(&format!("<h3 class=\"md\">{}</h3>", value.trim()))
+            }
+            Token::Title4(value) => {
+                html.push_str(&format!("<h4 class=\"md\">{}</h4>", value.trim()))
+            }
+            Token::Unordered(value) => {
+                html.push_str("<ul class=\"md\">");
+                for item in value {
+                    html.push_str(&format!("<li class=\"md\">{}</li>", item));
+                }
+                html.push_str("</ul>");
+            }
             Token::Paragraph(value) => {
                 html.push_str("<p class=\"md\">");
-                html.push_str(&transform(&value));
+                html.push_str(&transform_text(&value));
                 html.push_str("</p>");
             }
+        }
+    }
+    html
+}
+
+fn transform_text(content: &str) -> String {
+    let mut tokenizer = LineTokenizer::new(content);
+    let mut html = String::new();
+    while let Some(token) = tokenizer.next() {
+        match token {
+            LineToken::Em(value) => html.push_str(&format!("<em class=\"md\">{}</em>", value)),
+            LineToken::Bold(value) => {
+                html.push_str(&format!("<strong class=\"md\">{}</strong>", value))
+            }
+            LineToken::EmBold(value) => html.push_str(&format!(
+                "<em class=\"md\"><strong class=\"md\">{}</strong></em>",
+                value
+            )),
+            LineToken::Text(value) => {
+                html.push_str(&value);
+            }
+            LineToken::LF => html.push_str("<br/>"),
         }
     }
     html

@@ -8,32 +8,40 @@ fn test_transform() {
 }
 
 fn get_md_content() -> &'static str {
-    return r#"
+    return r#"salut les enfants.
+Hello
 
-salut les enfants.__Hello le monde__
-
-#test
-##test hello world
-
-
-Hello Paragraph 42
-
-###test42
-hello
-####test42
-_Yoooo de fou_
-__*Hello you ici bas__*"#;
+Hello _World_ in second paragraph
+Hello **World** in second paragraph
+Hello *__World__* in second paragraph
+# Hello World
+## Hello World
+### Hello World
+#### Hello World
+* Item1
+* Item2
++ Item3
+- Item4
+"#;
 }
 
 fn get_html_content() -> &'static str {
     return "\
-<p class=\"md\">salut les enfants.<strong>Hello le monde</strong></p>\
-<h1 class=\"md\">test</h1>\
-<h2 class=\"md\">test hello world</h2>\
-<p class=\"md\">Hello Paragraph 42</p>\
-<h3 class=\"md\">test42</h3>\
-hello<br class=\"md\" />\
-<h4 class=\"md\">test42</h4>\
-<em>Yoooo de fou</em>\
-<em><strong>Hello you ici bas</strong></em>";
+<p class=\"md\">salut les enfants.<br/>Hello</p>\
+<p class=\"md\">\
+Hello <em class=\"md\">World</em> in second paragraph<br/>\
+Hello <strong class=\"md\">World</strong> in second paragraph<br/>\
+Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragraph\
+</p>\
+<h1 class=\"md\">Hello World</h1>\
+<h2 class=\"md\">Hello World</h2>\
+<h3 class=\"md\">Hello World</h3>\
+<h4 class=\"md\">Hello World</h4>\
+<ul class=\"md\">\
+<li class=\"md\">Item1</li>\
+<li class=\"md\">Item2</li>\
+<li class=\"md\">Item3</li>\
+<li class=\"md\">Item4</li>\
+</ul>\
+";
 }
