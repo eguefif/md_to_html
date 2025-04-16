@@ -136,16 +136,8 @@ impl<'a> Tokenizer<'a> {
         loop {
             let item = self.get_next_line();
             if item.len() > 1 {
-                let mut item_iter = item.chars().peekable();
-                while let Some(peek) = item_iter.peek() {
-                    if !peek.is_digit(10) {
-                        break;
-                    }
-                    item_iter.next();
-                }
-
-                let item = item_iter.collect::<String>();
-                list.push(item[2..].to_string());
+                let item = self.skip_ordered_head(&item);
+                list.push(item);
             } else {
                 list.push(String::new())
             }
@@ -164,6 +156,19 @@ impl<'a> Tokenizer<'a> {
             }
         }
         true
+    }
+
+    fn skip_ordered_head(&mut self, item: &str) -> String {
+        let mut item_iter = item.chars().peekable();
+        while let Some(peek) = item_iter.peek() {
+            if !peek.is_digit(10) {
+                break;
+            }
+            item_iter.next();
+        }
+        item_iter.next();
+        item_iter.next();
+        item_iter.collect::<String>()
     }
 }
 
