@@ -22,6 +22,11 @@ Hello *__World__* in second paragraph
 * Item2
 + Item3
 - Item4
+
+1. Item1
+1. Item2
+3. Item3
+5. Item4
 "#;
 }
 
@@ -43,5 +48,11 @@ Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragr
 <li class=\"md\">Item3</li>\
 <li class=\"md\">Item4</li>\
 </ul>\
+<ol class=\"md\">\
+<li class=\"md\">Item1</li>\
+<li class=\"md\">Item2</li>\
+<li class=\"md\">Item3</li>\
+<li class=\"md\">Item4</li>\
+</ol>\
 ";
 }
