@@ -25,6 +25,7 @@ pub fn transform(content: &str) -> String {
             Token::Unordered(value) => {
                 html.push_str("<ul class=\"md\">");
                 for item in value {
+                    let item = transform_text(&item);
                     html.push_str(&format!("<li class=\"md\">{}</li>", item));
                 }
                 html.push_str("</ul>");
@@ -32,6 +33,7 @@ pub fn transform(content: &str) -> String {
             Token::Ordered(value) => {
                 html.push_str("<ol class=\"md\">");
                 for item in value {
+                    let item = transform_text(&item);
                     html.push_str(&format!("<li class=\"md\">{}</li>", item));
                 }
                 html.push_str("</ol>");

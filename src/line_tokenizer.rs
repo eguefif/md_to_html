@@ -61,7 +61,7 @@ impl<'a> LineTokenizer<'a> {
     fn get_text(&mut self) -> Option<LineToken> {
         let mut text = String::new();
         while let Some(peek) = self.iter.peek() {
-            if ['*', '_', '\n'].contains(peek) {
+            if ['[', '*', '_', '\n'].contains(peek) {
                 break;
             }
             text.push(*peek);
