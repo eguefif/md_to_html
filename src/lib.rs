@@ -25,6 +25,7 @@ pub fn transform(content: &str) -> String {
             Token::Unordered(value) => {
                 html.push_str("<ul class=\"md\">");
                 for item in value {
+                    let item = transform_text(&item);
                     html.push_str(&format!("<li class=\"md\">{}</li>", item));
                 }
                 html.push_str("</ul>");
@@ -32,6 +33,7 @@ pub fn transform(content: &str) -> String {
             Token::Ordered(value) => {
                 html.push_str("<ol class=\"md\">");
                 for item in value {
+                    let item = transform_text(&item);
                     html.push_str(&format!("<li class=\"md\">{}</li>", item));
                 }
                 html.push_str("</ol>");
@@ -41,6 +43,13 @@ pub fn transform(content: &str) -> String {
                     html.push_str("<p class=\"md\">");
                     html.push_str(&transform_text(&value));
                     html.push_str("</p>");
+                }
+            }
+            Token::Quote(value) => {
+                if value.len() > 0 {
+                    html.push_str("<div class=\"md quote\">");
+                    html.push_str(&transform_text(&value));
+                    html.push_str("</div>");
                 }
             }
         }
@@ -65,6 +74,10 @@ fn transform_text(content: &str) -> String {
                 html.push_str(&value);
             }
             LineToken::LF => html.push_str("<br/>"),
+            LineToken::Url(value) => html.push_str(&format!(
+                "<a href=\"{}\" class=\"md\">{}</a>",
+                value.url, value.a
+            )),
         }
     }
     html
