@@ -37,12 +37,17 @@ fn transform_text(content: &str) -> String {
     let mut html = String::new();
     while let Some(token) = tokenizer.next() {
         match token {
-            LineToken::Em(value) => html.push_str(&format!("<em>{}</em>", value)),
-            LineToken::Bold(value) => html.push_str(&format!("<strong>{}</strong>", value)),
-            LineToken::EmBold(value) => {
-                html.push_str(&format!("<em><strong>{}</strong></em>", value))
+            LineToken::Em(value) => html.push_str(&format!("<em class=\"md\">{}</em>", value)),
+            LineToken::Bold(value) => {
+                html.push_str(&format!("<strong class=\"md\">{}</strong>", value))
             }
-            LineToken::Text(value) => html.push_str(&value),
+            LineToken::EmBold(value) => html.push_str(&format!(
+                "<em class=\"md\"><strong class=\"md\">{}</strong></em>",
+                value
+            )),
+            LineToken::Text(value) => {
+                html.push_str(&value);
+            }
             LineToken::LF => html.push_str("<br/>"),
         }
     }

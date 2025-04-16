@@ -21,7 +21,7 @@ impl<'a> LineTokenizer<'a> {
     }
 
     fn handle_emphasize(&mut self) -> Option<LineToken> {
-        let mut kind = 1;
+        let mut kind = 0;
         let mut content = String::new();
         while let Some(peek) = self.iter.peek() {
             if ['*', '_'].contains(peek) && kind < 3 {
@@ -32,16 +32,18 @@ impl<'a> LineTokenizer<'a> {
             }
         }
         let mut counter = kind;
-        while let Some(next) = self.iter.next() {
+        while let Some(peek) = self.iter.peek() {
             if counter == 0 {
                 break;
             }
-            if ['*', '_'].contains(&next) {
+            if ['*', '_'].contains(peek) {
                 counter -= 1;
             }
+            let next = self.iter.next().unwrap();
             content.push(next);
         }
         let content = (&content[..content.len() - kind]).to_string();
+
         match kind {
             1 => Some(LineToken::Em(content)),
             2 => Some(LineToken::Bold(content)),

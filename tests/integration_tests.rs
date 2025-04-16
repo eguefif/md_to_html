@@ -11,9 +11,9 @@ fn get_md_content() -> &'static str {
     return r#"salut les enfants.
 Hello
 
-Hello World in second paragraph
-Hello World in second paragraph
-Hello World in second paragraph
+Hello _World_ in second paragraph
+Hello **World** in second paragraph
+Hello *__World__* in second paragraph
 # Hello World
 ## Hello World
 ### Hello World
@@ -25,9 +25,9 @@ fn get_html_content() -> &'static str {
     return "\
 <p class=\"md\">salut les enfants.<br/>Hello</p>\
 <p class=\"md\">\
-Hello World in second paragraph<br/>\
-Hello World in second paragraph<br/>\
-Hello World in second paragraph\
+Hello <em class=\"md\">World</em> in second paragraph<br/>\
+Hello <strong class=\"md\">World</strong> in second paragraph<br/>\
+Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragraph\
 </p>\
 <h1 class=\"md\">Hello World</h1>\
 <h2 class=\"md\">Hello World</h2>\
