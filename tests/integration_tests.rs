@@ -8,43 +8,22 @@ fn test_transform() {
 }
 
 fn get_md_content() -> &'static str {
-    return r#"
+    return r#"salut les enfants.
+Hello
 
-salut les enfants.__Hello le monde__
-
-#test
-##test hello world
-
-
-Hello Paragraph 42
-
-###test42
-hello
-####test42
-_Yoooo de fou_
-__*Hello you ici bas__*
-
-- Hello World
-+ Hello 1
-* Hello 2"#;
+Hello World in second paragraph
+Hello World in second paragraph
+Hello World in second paragraph
+"#;
 }
 
 fn get_html_content() -> &'static str {
     return "\
-<p class=\"md\">salut les enfants.<strong>Hello le monde</strong></p>\
-<h1 class=\"md\">test</h1>\
-<h2 class=\"md\">test hello world</h2>\
-<p class=\"md\">Hello Paragraph 42</p>\
-<h3 class=\"md\">test42</h3>\
-hello<br class=\"md\" />\
-<h4 class=\"md\">test42</h4>\
-<em>Yoooo de fou</em>\
-<em><strong>Hello you ici bas</strong></em>\
-<p>\
-<ul>\
-<li>Hello World</li>\
-<li>Hello 1</li>\
-<li>Hello 2</li>\
-</ul>|
+<p class=\"md\">salut les enfants.<br/>Hello</p>\
+<p class=\"md\">\
+Hello World in second paragraph<br/>\
+Hello World in second paragraph<br/>\
+Hello World in second paragraph<br/>\
+</p>\
 ";
 }

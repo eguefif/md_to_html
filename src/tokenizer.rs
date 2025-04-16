@@ -1,20 +1,15 @@
 use std::iter::{Iterator, Peekable};
 use std::str::Chars;
 
-const SPECIAL_CHAR: &[char] = &['\n', '_', '*', '#'];
+const SPECIAL_LINE_CHAR: &[char] = &['-', '*', '#', '+', '1'];
 
 #[derive(Debug)]
 pub enum Token {
-    Text(String),
     Paragraph(String),
-    LineFeed,
     Title1(String),
     Title2(String),
     Title3(String),
     Title4(String),
-    Em(String),
-    Bold(String),
-    EmBold(String),
 }
 
 pub struct Tokenizer<'a> {
@@ -51,89 +46,77 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    fn get_text_token(&mut self, next: char) -> Option<Token> {
-        let mut text = String::new();
-        text.push(next);
-        while let Some(peek) = self.iter.peek() {
-            if SPECIAL_CHAR.contains(peek) {
+    fn get_paragraph(&mut self) -> Option<Token> {
+        let mut paragraph = String::new();
+        loop {
+            let line = self.get_next_line();
+            if line.len() == 0 {
                 break;
             }
-            text.push(*peek);
-            self.iter.next();
+            paragraph.push_str(&line);
+            if self.is_special_char() || self.is_linefeed() {
+                break;
+            }
+            paragraph.push('\n');
         }
-        Some(Token::Text(text))
+        Some(Token::Paragraph(paragraph))
     }
 
-    fn handle_line_feed(&mut self) -> Option<Token> {
+    fn is_special_char(&mut self) -> bool {
         if let Some(peek) = self.iter.peek() {
-            if *peek == '\n' {
-                self.iter.next();
-                self.get_paragraph()
-            } else {
-                Some(Token::LineFeed)
+            if SPECIAL_LINE_CHAR.contains(peek) {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn is_linefeed(&mut self) -> bool {
+        if let Some('\n') = self.iter.peek() {
+            self.iter.next();
+            return true;
+        }
+        false
+    }
+
+    fn get_next_line(&mut self) -> String {
+        let mut line = String::new();
+        while let Some(next) = self.iter.next() {
+            if next == '\n' {
+                break;
+            }
+            line.push(next);
+        }
+        line
+    }
+
+    fn get_special_line(&mut self) -> Option<Token> {
+        if let Some(next) = self.iter.next() {
+            match next {
+                '#' => self.get_title_token(),
+                '-' | '*' | '+' => self.get_unordered_list(),
+                _ => None,
             }
         } else {
-            Some(Token::LineFeed)
+            None
         }
     }
 
-    fn get_paragraph(&mut self) -> Option<Token> {
-        let mut content = String::new();
-        while let Some(next) = self.iter.next() {
-            if let Some(peek) = self.iter.peek() {
-                if next == '\n' && *peek == '\n' {
-                    self.iter.next();
-                    break;
-                }
-            }
-            content.push(next);
-        }
-        Some(Token::Paragraph(content))
-    }
-
-    fn handle_emphasize(&mut self) -> Option<Token> {
-        let mut kind = 1;
-        let mut content = String::new();
-        while let Some(peek) = self.iter.peek() {
-            if ['*', '_'].contains(peek) && kind < 3 {
-                self.iter.next();
-                kind += 1;
-            } else {
-                break;
-            }
-        }
-        let mut counter = kind;
-        while let Some(next) = self.iter.next() {
-            if counter == 0 {
-                break;
-            }
-            if ['*', '_'].contains(&next) {
-                counter -= 1;
-            }
-            content.push(next);
-        }
-        let content = (&content[..content.len() - kind]).to_string();
-        match kind {
-            1 => Some(Token::Em(content)),
-            2 => Some(Token::Bold(content)),
-            3 => Some(Token::EmBold(content)),
-            _ => None,
-        }
+    fn get_unordered_list(&mut self) -> Option<Token> {
+        None
     }
 }
 
 impl<'a> Iterator for Tokenizer<'a> {
     type Item = Token;
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(next) = self.iter.next() {
-            match next {
-                '#' => self.get_title_token(),
-                '\n' => self.handle_line_feed(),
-                '_' | '*' => self.handle_emphasize(),
-                _ => self.get_text_token(next),
+        if let Some(peek) = self.iter.peek() {
+            if !SPECIAL_LINE_CHAR.contains(peek) {
+                return self.get_paragraph();
+            } else {
+                return self.get_special_line();
             }
-        } else {
-            None
         }
+        None
     }
 }
