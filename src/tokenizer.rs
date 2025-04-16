@@ -1,7 +1,7 @@
 use std::iter::{Iterator, Peekable};
 use std::str::Chars;
 
-const SPECIAL_LINE_CHAR: &[char] = &['-', '*', '#', '+', '1', '>'];
+const SPECIAL_LINE_CHAR: &[char] = &['-', '*', '#', '+', '1', '>', '`'];
 
 #[derive(Debug)]
 pub enum Token {
@@ -13,6 +13,7 @@ pub enum Token {
     Unordered(Vec<String>),
     Ordered(Vec<String>),
     Quote(String),
+    Code(String),
 }
 
 pub struct Tokenizer<'a> {
@@ -103,6 +104,7 @@ impl<'a> Tokenizer<'a> {
                 '-' | '*' | '+' => self.get_unordered_list(),
                 '1' => self.get_ordered_list(),
                 '>' => self.get_quote(),
+                '`' => self.get_code_snippet(),
                 _ => None,
             }
         } else {
@@ -189,6 +191,38 @@ impl<'a> Tokenizer<'a> {
         }
 
         Some(Token::Quote(quote))
+    }
+
+    fn get_code_snippet(&mut self) -> Option<Token> {
+        if self.is_code_snippet() {
+            let mut code = String::new();
+            while let Some(line) = self.get_next_line().into() {
+                code.push_str(&line);
+                code.push('\n');
+                if line.is_empty() || self.is_code_snippet() {
+                    break;
+                }
+            }
+            Some(Token::Code(code))
+        } else {
+            self.get_paragraph()
+        }
+    }
+
+    fn is_code_snippet(&mut self) -> bool {
+        let mut lookahead = self.iter.clone();
+        if let Some('`') = lookahead.next() {
+            if let Some('`') = lookahead.next() {
+                if let Some('`') = lookahead.next() {
+                    self.iter.next();
+                    self.iter.next();
+                    self.iter.next();
+                    self.iter.next();
+                    return true;
+                }
+            }
+        }
+        false
     }
 }
 

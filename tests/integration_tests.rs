@@ -1,4 +1,38 @@
 #[test]
+fn test_code_snippet() {
+    let content = get_md_code();
+    let expected = get_html_code();
+    let result = md_to_html::transform(content);
+
+    assert_eq!(result.as_str(), expected);
+}
+
+fn get_md_code() -> &'static str {
+    return "\
+```
+let a = 5;
+function lambda(x: String) {
+        println!(\"this is some code\");
+        return x;
+}
+lambda(5) + a;
+```\
+";
+}
+
+fn get_html_code() -> &'static str {
+    return "\
+<div class=\"md code\">let a = 5;
+function lambda(x: String) {
+        println!(\"this is some code\");
+        return x;
+}
+lambda(5) + a;
+</div>\
+";
+}
+
+#[test]
 fn test_transform() {
     let content = get_md_content();
     let expected = get_html_content();
