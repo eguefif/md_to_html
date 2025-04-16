@@ -45,6 +45,13 @@ pub fn transform(content: &str) -> String {
                     html.push_str("</p>");
                 }
             }
+            Token::Quote(value) => {
+                if value.len() > 0 {
+                    html.push_str("<div class=\"md quote\">");
+                    html.push_str(&transform_text(&value));
+                    html.push_str("</div>");
+                }
+            }
         }
     }
     html

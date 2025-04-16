@@ -31,6 +31,8 @@ Hello *__World__* in second paragraph
 You can click on [Link to](http://www.fakewebsite.com)
 1. Link: [test](http://test.com)
 1. Link2: [test2](http://test2.com)
+>Hello, I'm a quote
+>That goes over two lines
 "#;
 }
 
@@ -64,5 +66,6 @@ You can click on <a href=\"http://www.fakewebsite.com\" class=\"md\">Link to</a>
 <li class=\"md\">Link: <a href=\"http://test.com\" class=\"md\">test</a></li>\
 <li class=\"md\">Link2: <a href=\"http://test2.com\" class=\"md\">test2</a></li>\
 </ol>\
+<div class=\"md quote\">Hello, I'm a quote<br/>That goes over two lines</div>\
 ";
 }
