@@ -18,6 +18,10 @@ Hello *__World__* in second paragraph
 ## Hello World
 ### Hello World
 #### Hello World
+* Item1
+* Item2
++ Item3
+- Item4
 "#;
 }
 
@@ -33,5 +37,11 @@ Hello <em class=\"md\"><strong class=\"md\">World</strong></em> in second paragr
 <h2 class=\"md\">Hello World</h2>\
 <h3 class=\"md\">Hello World</h3>\
 <h4 class=\"md\">Hello World</h4>\
+<ul class=\"md\">\
+<li class=\"md\">Item1</li>\
+<li class=\"md\">Item2</li>\
+<li class=\"md\">Item3</li>\
+<li class=\"md\">Item4</li>\
+</ul>\
 ";
 }

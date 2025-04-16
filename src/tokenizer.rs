@@ -10,6 +10,7 @@ pub enum Token {
     Title2(String),
     Title3(String),
     Title4(String),
+    Unordered(Vec<String>),
 }
 
 pub struct Tokenizer<'a> {
@@ -24,6 +25,7 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn get_title_token(&mut self) -> Option<Token> {
+        self.iter.next();
         let mut raw_title = String::new();
         loop {
             if let Some(next) = self.iter.next() {
@@ -91,8 +93,8 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn get_special_line(&mut self) -> Option<Token> {
-        if let Some(next) = self.iter.next() {
-            match next {
+        if let Some(peek) = self.iter.peek() {
+            match peek {
                 '#' => self.get_title_token(),
                 '-' | '*' | '+' => self.get_unordered_list(),
                 _ => None,
@@ -103,7 +105,28 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn get_unordered_list(&mut self) -> Option<Token> {
-        None
+        let mut list = Vec::new();
+        loop {
+            let item = self.get_next_line();
+            if item.len() > 1 {
+                list.push(item[2..].to_string());
+            } else {
+                list.push(String::new())
+            }
+            if self.is_unordered_list_end() {
+                break;
+            }
+        }
+
+        Some(Token::Unordered(list))
+    }
+    fn is_unordered_list_end(&mut self) -> bool {
+        if let Some(peek) = self.iter.peek() {
+            if ['-', '*', '+'].contains(peek) {
+                return false;
+            }
+        }
+        true
     }
 }
 

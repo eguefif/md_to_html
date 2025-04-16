@@ -22,6 +22,13 @@ pub fn transform(content: &str) -> String {
             Token::Title4(value) => {
                 html.push_str(&format!("<h4 class=\"md\">{}</h4>", value.trim()))
             }
+            Token::Unordered(value) => {
+                html.push_str("<ul class=\"md\">");
+                for item in value {
+                    html.push_str(&format!("<li class=\"md\">{}</li>", item));
+                }
+                html.push_str("</ul>");
+            }
             Token::Paragraph(value) => {
                 html.push_str("<p class=\"md\">");
                 html.push_str(&transform_text(&value));
