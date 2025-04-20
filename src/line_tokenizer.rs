@@ -13,6 +13,7 @@ pub enum LineToken {
     EmBold(String),
     Text(String),
     Url(Link),
+    Code(String),
 }
 
 pub struct LineTokenizer<'a> {
@@ -86,6 +87,17 @@ impl<'a> LineTokenizer<'a> {
 
         Some(LineToken::Url(Link { url, a }))
     }
+    fn handle_line_code(&mut self) -> Option<LineToken> {
+        let mut code = String::new();
+        self.iter.next();
+        while let Some(next) = self.iter.next() {
+            if next == '`' {
+                break;
+            }
+            code.push(next);
+        }
+        Some(LineToken::Code(code))
+    }
 }
 
 impl<'a> Iterator for LineTokenizer<'a> {
@@ -94,6 +106,7 @@ impl<'a> Iterator for LineTokenizer<'a> {
         if let Some(peek) = self.iter.peek() {
             match peek {
                 '*' | '_' => self.handle_emphasize(),
+                '`' => self.handle_line_code(),
                 '\n' => {
                     self.iter.next();
                     return Some(LineToken::LF);
