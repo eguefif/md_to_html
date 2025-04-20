@@ -11,11 +11,11 @@ fn get_md_code() -> &'static str {
     return "\
 ```
 let a = 5;
-function lambda(x: String) {
+fn lambda(x: String) {
         println!(\"this is some code\");
         return x;
 }
-lambda(5) + a;
+let b = lambda(5) + a;
 ```\
 ";
 }

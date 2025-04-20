@@ -54,7 +54,7 @@ pub fn transform(content: &str) -> String {
             }
             Token::Code(value) => {
                 if value.len() > 0 {
-                    html.push_str(&format!("<div class=\"md code\">{}</div>", value));
+                    html.push_str(&format!("<pre><code class=\"md\">{}</code></pre>", value));
                 }
             }
         }
