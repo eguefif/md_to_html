@@ -13,7 +13,7 @@ pub enum Token {
     Unordered(Vec<String>),
     Ordered(Vec<String>),
     Quote(String),
-    Code(String),
+    Code((String, String)),
 }
 
 pub struct Tokenizer<'a> {
@@ -193,21 +193,25 @@ impl<'a> Tokenizer<'a> {
         Some(Token::Quote(quote))
     }
 
-    // TODO: Handle language type
     fn get_code_snippet(&mut self) -> Option<Token> {
         if self.is_code_snippet() {
             let mut code = String::new();
+            let language = self.get_language();
             while let Some(line) = self.get_next_line().into() {
                 code.push_str(&line);
                 code.push('\n');
-                if line.is_empty() || self.is_code_snippet() {
+                if self.is_code_snippet() {
                     break;
                 }
             }
-            Some(Token::Code(code))
+            Some(Token::Code((language, code)))
         } else {
             self.get_paragraph()
         }
+    }
+
+    fn get_language(&mut self) -> String {
+        self.get_next_line()
     }
 
     fn is_code_snippet(&mut self) -> bool {
@@ -215,7 +219,6 @@ impl<'a> Tokenizer<'a> {
         if let Some('`') = lookahead.next() {
             if let Some('`') = lookahead.next() {
                 if let Some('`') = lookahead.next() {
-                    self.iter.next();
                     self.iter.next();
                     self.iter.next();
                     self.iter.next();

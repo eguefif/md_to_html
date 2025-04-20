@@ -52,9 +52,10 @@ pub fn transform(content: &str) -> String {
                     html.push_str("</div>");
                 }
             }
-            Token::Code(value) => {
+            Token::Code((language, value)) => {
+                println!("{}", language);
                 if value.len() > 0 {
-                    html.push_str(&format!("<pre><code class=\"md\">{}</code></pre>", value));
+                    html.push_str(&format!("<code class=\"md\">{}</code>", value));
                 }
             }
         }
