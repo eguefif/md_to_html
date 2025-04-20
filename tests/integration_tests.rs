@@ -1,4 +1,21 @@
 #[test]
+fn test_line_code_snippet() {
+    let content = get_md_line_code();
+    let expected = get_html_line_code();
+    let result = md_to_html::transform(&content);
+
+    assert_eq!(result.as_str(), expected);
+}
+
+fn get_md_line_code() -> String {
+    "A little phrase with `single code line` in it.".to_string()
+}
+fn get_html_line_code() -> String {
+    "<p class=\"md\">A little phrase with <span class=\"md line-code\">single code line</span> in it.</p>"
+        .to_string()
+}
+
+#[test]
 fn test_code_snippet() {
     let content = get_md_code();
     let expected = get_html_code();
