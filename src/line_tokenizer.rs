@@ -20,6 +20,26 @@ pub struct LineTokenizer<'a> {
     iter: Peekable<Chars<'a>>,
 }
 
+impl<'a> Iterator for LineTokenizer<'a> {
+    type Item = LineToken;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(peek) = self.iter.peek() {
+            match peek {
+                '*' | '_' => self.handle_emphasize(),
+                '`' => self.handle_line_code(),
+                '\n' => {
+                    self.iter.next();
+                    return Some(LineToken::LF);
+                }
+                '[' => self.handle_link(),
+                _ => self.get_text(),
+            }
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a> LineTokenizer<'a> {
     pub fn new(content: &'a str) -> Self {
         Self {
@@ -59,16 +79,16 @@ impl<'a> LineTokenizer<'a> {
         }
     }
 
-    fn get_text(&mut self) -> Option<LineToken> {
-        let mut text = String::new();
-        while let Some(peek) = self.iter.peek() {
-            if ['[', '*', '_', '\n', '`'].contains(peek) {
+    fn handle_line_code(&mut self) -> Option<LineToken> {
+        let mut code = String::new();
+        self.iter.next();
+        while let Some(next) = self.iter.next() {
+            if next == '`' {
                 break;
             }
-            text.push(*peek);
-            self.iter.next();
+            code.push(next);
         }
-        Some(LineToken::Text(text))
+        Some(LineToken::Code(code))
     }
 
     fn handle_link(&mut self) -> Option<LineToken> {
@@ -87,35 +107,16 @@ impl<'a> LineTokenizer<'a> {
 
         Some(LineToken::Url(Link { url, a }))
     }
-    fn handle_line_code(&mut self) -> Option<LineToken> {
-        let mut code = String::new();
-        self.iter.next();
-        while let Some(next) = self.iter.next() {
-            if next == '`' {
+
+    fn get_text(&mut self) -> Option<LineToken> {
+        let mut text = String::new();
+        while let Some(peek) = self.iter.peek() {
+            if ['[', '*', '_', '\n', '`'].contains(peek) {
                 break;
             }
-            code.push(next);
+            text.push(*peek);
+            self.iter.next();
         }
-        Some(LineToken::Code(code))
-    }
-}
-
-impl<'a> Iterator for LineTokenizer<'a> {
-    type Item = LineToken;
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(peek) = self.iter.peek() {
-            match peek {
-                '*' | '_' => self.handle_emphasize(),
-                '`' => self.handle_line_code(),
-                '\n' => {
-                    self.iter.next();
-                    return Some(LineToken::LF);
-                }
-                '[' => self.handle_link(),
-                _ => self.get_text(),
-            }
-        } else {
-            None
-        }
+        Some(LineToken::Text(text))
     }
 }
