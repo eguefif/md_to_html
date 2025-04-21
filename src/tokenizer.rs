@@ -20,34 +20,24 @@ pub struct Tokenizer<'a> {
     iter: Peekable<Chars<'a>>,
 }
 
+impl<'a> Iterator for Tokenizer<'a> {
+    type Item = Token;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(peek) = self.iter.peek() {
+            if !SPECIAL_LINE_CHAR.contains(peek) {
+                return self.get_paragraph();
+            } else {
+                return self.get_special_line();
+            }
+        }
+        None
+    }
+}
+
 impl<'a> Tokenizer<'a> {
     pub fn new(content: &'a str) -> Self {
         Self {
             iter: content.chars().peekable(),
-        }
-    }
-
-    fn get_title_token(&mut self) -> Option<Token> {
-        self.iter.next();
-        let mut raw_title = String::new();
-        loop {
-            if let Some(next) = self.iter.next() {
-                if next == '\n' {
-                    break;
-                }
-                raw_title.push(next);
-            } else {
-                break;
-            }
-        }
-        if raw_title.starts_with("###") {
-            Some(Token::Title4(raw_title[3..].to_string()))
-        } else if raw_title.starts_with("##") {
-            Some(Token::Title3(raw_title[2..].to_string()))
-        } else if raw_title.starts_with("#") {
-            Some(Token::Title2(raw_title[1..].to_string()))
-        } else {
-            Some(Token::Title1(raw_title))
         }
     }
 
@@ -109,6 +99,30 @@ impl<'a> Tokenizer<'a> {
             }
         } else {
             None
+        }
+    }
+
+    fn get_title_token(&mut self) -> Option<Token> {
+        self.iter.next();
+        let mut raw_title = String::new();
+        loop {
+            if let Some(next) = self.iter.next() {
+                if next == '\n' {
+                    break;
+                }
+                raw_title.push(next);
+            } else {
+                break;
+            }
+        }
+        if raw_title.starts_with("###") {
+            Some(Token::Title4(raw_title[3..].to_string()))
+        } else if raw_title.starts_with("##") {
+            Some(Token::Title3(raw_title[2..].to_string()))
+        } else if raw_title.starts_with("#") {
+            Some(Token::Title2(raw_title[1..].to_string()))
+        } else {
+            Some(Token::Title1(raw_title))
         }
     }
 
@@ -216,8 +230,12 @@ impl<'a> Tokenizer<'a> {
 
     fn is_code_snippet(&mut self) -> bool {
         let mut lookahead = self.iter.clone();
-        while let Some(' ') = lookahead.next() {}
-        while let Some('\t') = lookahead.next() {}
+        while let Some(' ') = lookahead.peek() {
+            lookahead.next();
+        }
+        while let Some('\t') = lookahead.peek() {
+            lookahead.next();
+        }
         if let Some('`') = lookahead.next() {
             if let Some('`') = lookahead.next() {
                 if let Some('`') = lookahead.next() {
@@ -229,19 +247,5 @@ impl<'a> Tokenizer<'a> {
             }
         }
         false
-    }
-}
-
-impl<'a> Iterator for Tokenizer<'a> {
-    type Item = Token;
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(peek) = self.iter.peek() {
-            if !SPECIAL_LINE_CHAR.contains(peek) {
-                return self.get_paragraph();
-            } else {
-                return self.get_special_line();
-            }
-        }
-        None
     }
 }

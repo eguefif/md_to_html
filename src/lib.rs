@@ -1,8 +1,12 @@
 use line_tokenizer::{LineToken, LineTokenizer};
 use tokenizer::{Token, Tokenizer};
+use transformers::{
+    transform_title1, transform_title2, transform_title3, transform_title4, transform_unordered,
+};
 
 pub mod line_tokenizer;
 pub mod tokenizer;
+pub mod transformers;
 
 pub fn transform(content: &str) -> String {
     let mut html = String::new();
@@ -10,24 +14,13 @@ pub fn transform(content: &str) -> String {
 
     while let Some(token) = tokenizer.next() {
         match token {
-            Token::Title1(value) => {
-                html.push_str(&format!("<h1 class=\"md\">{}</h1>", value.trim()))
-            }
-            Token::Title2(value) => {
-                html.push_str(&format!("<h2 class=\"md\">{}</h2>", value.trim()))
-            }
-            Token::Title3(value) => {
-                html.push_str(&format!("<h3 class=\"md\">{}</h3>", value.trim()))
-            }
-            Token::Title4(value) => {
-                html.push_str(&format!("<h4 class=\"md\">{}</h4>", value.trim()))
-            }
+            Token::Title1(value) => html.push_str(&transform_title1(&value)),
+            Token::Title2(value) => html.push_str(&transform_title2(&value)),
+            Token::Title3(value) => html.push_str(&transform_title3(&value)),
+            Token::Title4(value) => html.push_str(&transform_title4(&value)),
             Token::Unordered(value) => {
                 html.push_str("<ul class=\"md\">");
-                for item in value {
-                    let item = transform_text(&item);
-                    html.push_str(&format!("<li class=\"md\">{}</li>", item));
-                }
+                html.push_str(&transform_unordered(value));
                 html.push_str("</ul>");
             }
             Token::Ordered(value) => {
@@ -62,7 +55,8 @@ pub fn transform(content: &str) -> String {
     html
 }
 
-fn transform_text(content: &str) -> String {
+pub fn transform_text(content: &str) -> String {
+    println!("CONTENT: {}", content);
     let mut tokenizer = LineTokenizer::new(content);
     let mut html = String::new();
     while let Some(token) = tokenizer.next() {

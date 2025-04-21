@@ -12,7 +12,7 @@ fn main() -> std::io::Result<()> {
     run_server("127.0.0.1", 8000)?;
     Ok(())
 }
-```
+   ```
 
 Starting with the function helps us define our needs. By doing so, we also find our entry point. Let's add to this file the following function.
 ```rust
