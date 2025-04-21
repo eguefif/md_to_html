@@ -216,6 +216,8 @@ impl<'a> Tokenizer<'a> {
 
     fn is_code_snippet(&mut self) -> bool {
         let mut lookahead = self.iter.clone();
+        while let Some(' ') = lookahead.next() {}
+        while let Some('\t') = lookahead.next() {}
         if let Some('`') = lookahead.next() {
             if let Some('`') = lookahead.next() {
                 if let Some('`') = lookahead.next() {

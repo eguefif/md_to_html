@@ -18,7 +18,7 @@ Add the github repo to your `Cargo.toml` file.
 ```rust
 fn main() {
     let content = "# My Title";
-    let html = md_to_html::transform(content).unwrap();
+    let html = md_to_html::transform(content);
     println!("{}", html);
 }
 ```
