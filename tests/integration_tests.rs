@@ -1,4 +1,55 @@
 #[test]
+fn test_line_code_snippet() {
+    let content = get_md_line_code();
+    let expected = get_html_line_code();
+    let result = md_to_html::transform(&content);
+
+    assert_eq!(result.as_str(), expected);
+}
+
+fn get_md_line_code() -> String {
+    "A little phrase with `single code line` in it.".to_string()
+}
+fn get_html_line_code() -> String {
+    "<p class=\"md\">A little phrase with <span class=\"md line-code\">single code line</span> in it.</p>"
+        .to_string()
+}
+
+#[test]
+fn test_code_snippet() {
+    let content = get_md_code();
+    let expected = get_html_code();
+    let result = md_to_html::transform(content);
+
+    assert_eq!(result.as_str(), expected);
+}
+
+fn get_md_code() -> &'static str {
+    return "\
+```
+let a = 5;
+function lambda(x: String) {
+        println!(\"this is some code\");
+        return x;
+}
+let b = lambda(5) + a;
+```\
+";
+}
+
+fn get_html_code() -> &'static str {
+    return "\
+<code class=\"md\">let a = 5;
+function lambda(x: String) {
+        println!(\"this is some code\");
+        return x;
+}
+let b = lambda(5) + a;
+</code>\
+";
+}
+
+#[test]
 fn test_transform() {
     let content = get_md_content();
     let expected = get_html_content();
