@@ -1,7 +1,7 @@
-use line_tokenizer::{LineToken, LineTokenizer};
 use tokenizer::{Token, Tokenizer};
 use transformers::{
-    transform_title1, transform_title2, transform_title3, transform_title4, transform_unordered,
+    transform_code, transform_list, transform_text, transform_title1, transform_title2,
+    transform_title3, transform_title4,
 };
 
 pub mod line_tokenizer;
@@ -20,15 +20,12 @@ pub fn transform(content: &str) -> String {
             Token::Title4(value) => html.push_str(&transform_title4(&value)),
             Token::Unordered(value) => {
                 html.push_str("<ul class=\"md\">");
-                html.push_str(&transform_unordered(value));
+                html.push_str(&transform_list(value));
                 html.push_str("</ul>");
             }
             Token::Ordered(value) => {
                 html.push_str("<ol class=\"md\">");
-                for item in value {
-                    let item = transform_text(&item);
-                    html.push_str(&format!("<li class=\"md\">{}</li>", item));
-                }
+                html.push_str(&transform_list(value));
                 html.push_str("</ol>");
             }
             Token::Paragraph(value) => {
@@ -47,39 +44,9 @@ pub fn transform(content: &str) -> String {
             }
             Token::Code((_, value)) => {
                 if value.len() > 0 {
-                    html.push_str(&format!("<code class=\"md\">{}</code>", value));
+                    html.push_str(&transform_code(&value));
                 }
             }
-        }
-    }
-    html
-}
-
-pub fn transform_text(content: &str) -> String {
-    println!("CONTENT: {}", content);
-    let mut tokenizer = LineTokenizer::new(content);
-    let mut html = String::new();
-    while let Some(token) = tokenizer.next() {
-        match token {
-            LineToken::Code(value) => {
-                html.push_str(&format!("<span class=\"md line-code\">{}</span>", value))
-            }
-            LineToken::Em(value) => html.push_str(&format!("<em class=\"md\">{}</em>", value)),
-            LineToken::Bold(value) => {
-                html.push_str(&format!("<strong class=\"md\">{}</strong>", value))
-            }
-            LineToken::EmBold(value) => html.push_str(&format!(
-                "<em class=\"md\"><strong class=\"md\">{}</strong></em>",
-                value
-            )),
-            LineToken::Text(value) => {
-                html.push_str(&value);
-            }
-            LineToken::LF => html.push_str("<br/>"),
-            LineToken::Url(value) => html.push_str(&format!(
-                "<a href=\"{}\" class=\"md\">{}</a>",
-                value.url, value.a
-            )),
         }
     }
     html
