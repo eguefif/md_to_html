@@ -4,13 +4,14 @@ This is a simple MD formatted content to HTML converter library.
 
 ## Description
 
-Caution, this project does not check user input at all. It is subject to XSS injection attacks. I use this converter n one of my project in a controlled environmement. This project should not be used in an environement where user input is not controlled first.
+Caution, this project does not check user input at all. It is subject to XSS injection attacks. I use this converter in one of my project in a controlled environment. This project should not be used in an environment where user input is not controlled first.
+
 
 This library epxose a `transform` function that convert a md content into HTML. It adds to each html tags a `md` class.
 
 ## Getting Started
 
-Add the github repo to your `Cargo.tml` file.
+Add the github repo to your `Cargo.toml` file.
 
 ### Example
 
